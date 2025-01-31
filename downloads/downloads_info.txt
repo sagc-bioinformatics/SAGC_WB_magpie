@@ -1,0 +1,1 @@
+# This folder is where the reference genome and annotations will be stored.

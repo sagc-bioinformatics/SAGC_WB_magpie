@@ -7,3 +7,5 @@
 - [ ] Download existing B10K sequence / assembly data
 - [ ] Set up jupyter notebook
 - [ ] Make plan for assembly / mapping of novel sequence data
+
+- I AM gROOT.

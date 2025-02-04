@@ -1,0 +1,42 @@
+
+
+# General Notes
+
+Sequencer reads Read 1 first in the forwards direction.
+
+Fluoresence can affect the reading due to phase differences.
+
+On C35, every base looks the same. 
+
+Due to random fragementation of sample, there's going to be a somewhat even distribution of A, C, T and G.
+
+Need to have "dark-cycles" (sequence entire thing except cycle 'X') when having barcodes within barcodes.
+
+The machine is calibrated to read an even distribution of bases, so when the entire image is, for an example, an 'A' the sensor can get washed out and the read can fail. 
+
+Concatenate all fastq files together into one file, then sort and output barcode files to their own seperate the data.
+
+zcat is the same 'cat' but can handle zipped data.
+
+Don't want to take up storage, so work with compressed files.
+
+When de-multiplexing happens, have to look at the end of the barcodes.
+
+Reverse compliments sometimes get used for the barcode.
+
+Sometimes errors for the barcode sequences, but there are tools that will accept a certain number of mutations before they're rejected.
+
+Short-read sequencing can't really assemble full genomes due to repeating sequences [etc. TTTTTTTTT], despite increasing the depth.
+
+Largest possible fragment size is ideal for de novo assembly.
+
+Homo sapien only eukaryote in the Kraken2 database, so reads of other eukaryote organisms can mistaken for it.
+
+Q30 - 1 in 1000 bases are statistically likely to be long.
+Q20 - 1 in 100
+Q10 - 1 in 10
+
+In a normal whole genome, expect to normally see a 40% peak in GC content.
+
+Need to trim reads to avoid adapters being included in the genome sequences.
+

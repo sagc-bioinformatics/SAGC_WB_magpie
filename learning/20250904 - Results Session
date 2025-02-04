@@ -40,3 +40,7 @@ In a normal whole genome, expect to normally see a 40% peak in GC content.
 
 Need to trim reads to avoid adapters being included in the genome sequences.
 
+Tools that can be used when unsure of the genome sequence:
+https://www.genome.umd.edu/jellyfish.html#Release
+http://genomescope.org
+

@@ -1,1 +1,3 @@
 downloads/*.gz
+.DS_STORE
+.ipynb_checkpoints

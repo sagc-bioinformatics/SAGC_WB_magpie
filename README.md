@@ -13,3 +13,17 @@
         Estimate percentage match to black-backed magpie per sample 
 
 - [ ] Make plans for presentations on the 20th
+- [-] Create conda environment for reference mapping
+
+### Mapping to a reference
+
+- Install required tools
+- Use tool like fastp or fastqc to filter reads by quality
+- Do contamination detection (kraken2)
+- Trim reads (remove adapter sequence) (trimmomatic, cutadapt)
+- Identify reference, build an index for reference (bwa-mem2)
+- Map to reference (bwa-mem2)
+- Modify the output alignment files (samtools)
+- Explore which reads have been assigned to which genes (IGV)
+- Call variants within annotated genes (mutect2?) - generate vcf file
+

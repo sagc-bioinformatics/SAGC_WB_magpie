@@ -1,0 +1,10 @@
+name: magpac
+channels:
+  - conda-forge
+  - bioconda
+  - default
+dependencies:
+  - bwa-mem2=2.2.1
+  - samtools=1.21
+  - fastp=0.23.4
+

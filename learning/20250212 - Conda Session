@@ -1,0 +1,7 @@
+20250212 - Conda Session
+
+# allows you to take a specific commit instead of all previous commits.
+git cherry-pick [COMMIT ID]
+
+
+

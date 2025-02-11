@@ -1,3 +1,4 @@
 downloads/*.gz
 .DS_STORE
 .ipynb_checkpoints
+scripts.magpacsmol.sh

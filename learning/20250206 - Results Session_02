@@ -1,0 +1,28 @@
+# General Notes
+
+Insert may or may not be larger than Read 1 and Read 2 combined.
+
+Exclude contaminated reads when doing a de novo assembly.
+
+If the Q30 of the cycle with the barcode sequence is low, it doesn't matter as much as long as the 
+barcode can be identified. 
+
+Undetermined barcodes could be due to index hopping.
+
+Undetermined reads are kept incase in case somebody wants to look at them.
+
+Mis-match tolerance: make sure barcodes have specific distances between them when constructing libraries.
+
+Adapter sequence: at one point in the sequence do is the Illumina adapter read instead of the actual insert.
+
+Trim out adapters first in the pipeline for assembly.
+
+Seqkit can create subsamples that randomly selects reads from within a fastq file, and these files can then be used for Kraken2.
+
+Assembly will be run on each individual sample.
+
+vcf file compares differences between sequenced genome and reference genome.
+
+
+
+

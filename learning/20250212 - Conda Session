@@ -7,3 +7,8 @@ Modified the magpac.sh script to use older versions, due to dependency issues.
 
 bwa documentation: https://bio-bwa.sourceforge.net/bwa.shtml
 
+Installed bwa instead of bwa-mem2 due to differences in memory usage.
+
+Put each stage of scripts into their own subdirectory within the scripts/ folder and restructured organisation of data.
+
+Created .yaml file for environment, instead of writing it explicitly in the script.

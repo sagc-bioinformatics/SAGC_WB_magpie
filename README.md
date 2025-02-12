@@ -27,3 +27,14 @@
 - Explore which reads have been assigned to which genes (IGV)
 - Call variants within annotated genes (mutect2?) - generate vcf file
 
+
+# Project log
+
+
+### 12/02/25
+
+- Restructured repository to make order of scripts clearer
+- Created environment.yml file for tools to run locally
+- Swapped from bwa-mem2 to bwa so that index building can fit within laptop memory
+
+

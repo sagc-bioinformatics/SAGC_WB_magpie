@@ -3,5 +3,7 @@
 # allows you to take a specific commit instead of all previous commits.
 git cherry-pick [COMMIT ID]
 
+Modified the magpac.sh script to use older versions, due to dependency issues.
 
+bwa documentation: https://bio-bwa.sourceforge.net/bwa.shtml
 

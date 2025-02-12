@@ -1,4 +1,10 @@
+# Ignoring uploading of data
 downloads/*.gz
+data/*.gz
+data/*.fastq
+data/*.tar
+
 .DS_STORE
 .ipynb_checkpoints
-scripts.magpacsmol.sh
+scripts/magpacsmol.sh
+scripts/magpac_backup.sh

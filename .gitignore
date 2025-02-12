@@ -7,6 +7,8 @@ data/reference/downloads_info.txt
 
 data/reference/GCA*.*
 
+scripts/03_mapping/AA*.*
+
 .DS_STORE
 .ipynb_checkpoints
 scripts/00_env_setup/magpacsmol.sh

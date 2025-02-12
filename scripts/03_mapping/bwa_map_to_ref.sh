@@ -1,10 +1,10 @@
 #!/bin/bash
 
-REFERENCE="../../downloads/reference/GCA_013399875.1_ASM1339987v1_genomic.fna.gz"
+REFERENCE="../../data/reference/GCA_013399875.1_ASM1339987v1_genomic.fna.gz"
 
-FQPATH="../../downloads/samples/"
+FQPATH="../../data/samples/"
 
-R1=$FQPATH/"SS_Muscle_S6_R1_001_subsample.fastq.gz"
-R2=$FQPATH/"SS_Muscle_S6_R2_001_subsample.fastq.gz"
+R1=$FQPATH/"AA_Muscle_S4_R1_001_subsample.fastq.gz"
+R2=$FQPATH/"AA_Muscle_S4_R2_001_subsample.fastq.gz"
 
-bwa mem $REFERENCE $R1 $R2 > SS_alignment.sam
+bwa mem $REFERENCE $R1 $R2 > AA_alignment.sam

@@ -12,3 +12,9 @@ Installed bwa instead of bwa-mem2 due to differences in memory usage.
 Put each stage of scripts into their own subdirectory within the scripts/ folder and restructured organisation of data.
 
 Created .yaml file for environment, instead of writing it explicitly in the script.
+
+IGV wants a sorted SAM file which can be done with samtools.
+
+Created sam files and mapped our sample data to the reference genome.
+
+To Do: Figure out how to trim samples using fastp, then try mapping again.

@@ -1,2 +1,3 @@
 *.gz
+*.gz.*
 scripts/01_download/sample_download.sh

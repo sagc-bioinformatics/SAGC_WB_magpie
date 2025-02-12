@@ -37,4 +37,17 @@
 - Created environment.yml file for tools to run locally
 - Swapped from bwa-mem2 to bwa so that index building can fit within laptop memory
 
+- Built index for B10K reference
+- Mapped a paired sample to reference
+- Played a little with IGV / samtools
+    - Next time - let's run on all samples
+    - trim!
+    - Let's generate some summary stats using samtools
+    - Let's take a closer look at our alignment, maybe with IGV
+    - Figure out how many annotated genes we have mappings for
+- JOHN todo: will run mapping on the whole data - generate BAM files
+
+
+
+
 

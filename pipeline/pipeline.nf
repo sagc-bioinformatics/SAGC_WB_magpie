@@ -31,6 +31,8 @@ process FASTP {
 
 process BWA_INDEX {
 
+    publishDir "${params.outdir}/reference"
+
     container 'https://depot.galaxyproject.org/singularity/bwa:0.7.18--he4a0461_0'
 
     input:
@@ -103,6 +105,7 @@ process SAMTOOLS_STATS {
     input:
     tuple val(id), path(bam), path(index)
     path fasta
+    path index
 
     output:
     tuple val(id), path("*.stats"), emit: stats
@@ -111,7 +114,7 @@ process SAMTOOLS_STATS {
     samtools \\
         stats \\
         -@ ${task.cpus-1} \\
-        ${fasta} \\
+        --reference ${fasta} \\
         ${bam} \\
         > ${id}.stats
     """
@@ -128,6 +131,10 @@ process MULTIQC {
 
     output:
     path '*.html'
+
+    """
+    multiqc -n multiqc_report.html ${files}
+    """
 }
 
 workflow {
@@ -142,13 +149,13 @@ workflow {
     BWA_INDEX ( reference )
 
     /// Map trimmed files to the reference
-    BWA_MEM ( FASTP.out.fastq, reference, BWA_INDEX.out.index.first() )
+    BWA_MEM ( FASTP.out.fastq, reference, BWA_INDEX.out.index )
 
     /// Index bam files
     SAMTOOLS_INDEX ( BWA_MEM.out.bam )
 
     /// Collect stats on indexed bam filesA
-    SAMTOOLS_STATS ( SAMTOOLS_INDEX.out.indexed )A
+    SAMTOOLS_STATS ( SAMTOOLS_INDEX.out.indexed, reference, BWA_INDEX.out.index )
 
     /// Combine all output into a single report
     SAMTOOLS_STATS.out.stats

@@ -5,7 +5,7 @@ process FASTP {
     
     container 'https://depot.galaxyproject.org/singularity/fastp:0.23.4--h5f740d0_0'
     
-    cpus 4
+    cpus 16
 
     input:
     tuple val(id), path(reads)
@@ -54,7 +54,7 @@ process BWA_MEM {
 
     container 'https://depot.galaxyproject.org/singularity/mulled-v2-fe8faa35dbf6dc65a0f7f5d4ea12e31a79f73e40:1bd8542a8a0b42e0981337910954371d0230828e-0'
     
-    cpus 6
+    cpus 16
 
     input:
     tuple val(id), path(reads)
@@ -120,6 +120,47 @@ process SAMTOOLS_STATS {
     """
 }
 
+process SAMTOOLS_COVERAGE {
+
+    container 'https://depot.galaxyproject.org/singularity/samtools:1.21--h50ea8bc_0'
+
+    publishDir "${params.outdir}/samtools_stats", pattern: "*.coverage"
+
+    input:
+    tuple val(id), path(bam)
+
+    output:
+    tuple val(id), path("*.coverage"), emit: coverage
+
+    """
+    samtools \\
+        coverage \\
+        ${bam} \\
+        > ${id}.coverage
+    """
+}
+
+process BCFTOOLS_CALL {
+
+    container 'https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0'
+
+    publishDir "${params.outdir}/bcftools"
+
+    input:
+    tuple val(id), path(bam)
+    path fasta
+
+    output:
+    tuple val(id), path("*.bcf"), emit: bcf
+
+    """
+    bcftools mpileup -Ou \\
+        -f $fasta \\
+        ${bam} \\
+        | bcftools call -mv -Ob -o ${id}.bcf
+    """
+}
+
 process MULTIQC {
 
     container 'https://depot.galaxyproject.org/singularity/multiqc:1.27--pyhdfd78af_0'
@@ -150,16 +191,23 @@ workflow {
 
     /// Map trimmed files to the reference
     BWA_MEM ( FASTP.out.fastq, reference, BWA_INDEX.out.index )
+    
+    /// Do variant calling on bam files
+    BCFTOOLS_CALL ( BWA_MEM.out.bam, reference )
 
     /// Index bam files
     SAMTOOLS_INDEX ( BWA_MEM.out.bam )
 
-    /// Collect stats on indexed bam filesA
+    /// Collect stats on indexed bam files
     SAMTOOLS_STATS ( SAMTOOLS_INDEX.out.indexed, reference, BWA_INDEX.out.index )
+    
+    /// Collect coverage info
+    SAMTOOLS_COVERAGE ( BWA_MEM.out.bam )
 
     /// Combine all output into a single report
     SAMTOOLS_STATS.out.stats
         | mix(FASTP.out.json)
+        | mix(SAMTOOLS_COVERAGE.out.coverage)
         | map { it[1] }
         | collect
         | MULTIQC

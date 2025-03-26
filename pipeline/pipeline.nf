@@ -154,10 +154,111 @@ process BCFTOOLS_CALL {
     tuple val(id), path("*.bcf"), emit: bcf
 
     """
-    bcftools mpileup -Ou \\
-        -f $fasta \\
-        ${bam} \\
+    gunzip $fasta -c > reference.fasta
+    bcftools mpileup -Ou -f reference.fasta ${bam} \\
         | bcftools call -mv -Ob -o ${id}.bcf
+    """
+}
+
+process GENERATE_BED {
+
+    publishDir "${params.outdir}/bed", pattern: "*.bed"
+
+    input:
+    path gtf
+
+    output:
+    path("*.bed"), emit: bed
+
+    """
+    zcat $gtf | awk '\$3 == "gene" {print \$1"\t"\$4-1"\t"\$5}' > genes_only.bed
+    """
+}
+
+process BCFTOOLS_INDEX {
+
+    container 'https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0'
+
+    publishDir "${params.outdir}/bcftools_index"
+
+    input:
+    tuple val(id), path(bcf)
+
+    output:
+    tuple val(id), path(bcf), path("*.csi"), emit: indexed
+    
+    """
+    bcftools index ${bcf}
+    """
+}
+
+process FILTER_VARIANTS {
+
+    container 'https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0'
+
+    publishDir "${params.outdir}/bcftools"
+
+    input:
+    tuple val(id), path(bcf), path(csi)
+    path bed
+
+    output:
+    tuple val(id), path("*.vcf.gz"), path("*.csi"), emit: vcf
+    
+    """
+    bcftools view -Oz -R ${bed} \\
+        -i 'QUAL>30 && MQ>40 && DP>10 && F_MISSING<0.1 && N_ALT=1 && AC>1' ${bcf} > ${id}_filtered.vcf.gz
+    bcftools index ${id}_filtered.vcf.gz
+    """
+}
+
+process BCFTOOLS_MERGE {
+
+    container 'https://depot.galaxyproject.org/singularity/bcftools:1.20--h8b25389_0'
+
+    publishDir "${params.outdir}/bcftools_merge"
+
+    input:
+    path(files)
+
+    output:
+    path("merged.vcf.gz"), emit: merged
+    
+    """
+    bcftools merge *.vcf.gz -o merged.vcf.gz
+    """
+}
+
+process VCF2PHYLIP {
+
+    publishDir "${params.outdir}/vcf2phylip"
+
+    input:
+    path(merged)
+
+    output:
+    path("*.phy"), emit: phy
+    
+    """
+    vcf2phylip.py --input $merged
+    """
+}
+
+process IQTREE {
+    
+    container 'https://depot.galaxyproject.org/singularity/iqtree:2.3.4--h21ec9f0_0'
+
+    publishDir "${params.outdir}/iqtree"
+
+    input:
+    path(fasta)
+    
+    output:
+    path("*.iqtree"), emit: iqtree
+    path("*.treefile"), emit: treefile
+    
+    """
+    iqtree -s ${fasta} -m GTR+G -nt AUTO -bb 1000 -alrt 1000
     """
 }
 
@@ -177,6 +278,7 @@ process MULTIQC {
     multiqc -n multiqc_report.html ${files}
     """
 }
+
 
 workflow {
 
@@ -204,7 +306,25 @@ workflow {
     /// Collect coverage info
     SAMTOOLS_COVERAGE ( BWA_MEM.out.bam )
 
-    /// Combine all output into a single report
+    /// Extract regions located within genes
+    GENERATE_BED ( file(params.annotation, checkIfExists: true) )
+
+    // Index bcf files
+    BCFTOOLS_INDEX ( BCFTOOLS_CALL.out.bcf )
+
+    // Filter variants 
+    FILTER_VARIANTS ( BCFTOOLS_INDEX.out.indexed, GENERATE_BED.out.bed )
+
+    // Merge vcf files
+    BCFTOOLS_MERGE( FILTER_VARIANTS.out.vcf | map { [it[1], it[2]] } | collect )
+
+    // Create PHYLIP alignment
+    VCF2PHYLIP ( BCFTOOLS_MERGE.out.merged )
+
+    // Make tree
+    IQTREE ( VCF2PHYLIP.out.phy )
+
+    // Combine all output into a single report
     SAMTOOLS_STATS.out.stats
         | mix(FASTP.out.json)
         | mix(SAMTOOLS_COVERAGE.out.coverage)
